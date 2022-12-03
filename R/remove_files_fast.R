@@ -1,4 +1,6 @@
 remove_files_fast = function(Source.Folder){
+  ### source folder 내부의 모든 파일들을 삭제
+
   # robocopy c:\empty c:\test /MIR
   dir.create("C:/EMPTY_FOLDER_FOR_REMOVING", showWarnings = F)
 
