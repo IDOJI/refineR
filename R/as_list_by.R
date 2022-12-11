@@ -1,8 +1,8 @@
 as_list_by = function(df, by){
-  groups = df[,by] %>% unique
+  groups = df[,by] %>% unlist %>% unique
   data.list = lapply(groups, FUN=function(ith_group,...){
     # ith_group = groups[1]
-    df %>% dplyr::filter(df[,by]==ith_group) %>% as_tibble %>% return
+    df %>% dplyr::filter(df[,by] %>% unlist == ith_group) %>% as_tibble %>% return
   })
   names(data.list) = groups
   return(data.list)
