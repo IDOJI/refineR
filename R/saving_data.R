@@ -1,12 +1,12 @@
-saving_data = function(df.name, df, path){
+saving_data = function(rda.name, rda, path){
+  path = path %>% path_tail_slash
+  file = paste0(path, rda.name)
+  assign(rda.name, rda)
+
   require(usethis)
-  path = path %>% path_tail_slash()
-  file = paste0(path, df.name)
-  assign(df.name, df)
-  do.call("use_data", list(as.name(df.name), overwrite=TRUE))
+  do.call("use_data", list(as.name(rda.name), overwrite=TRUE))
 
   # usethis::use_data(data.df, overwrite=T)
-  # usethis::use_data_raw(df.name)
-  text = "Writing the data is done!"
-  cat("\n", crayon::green(text), "\n")
+  # usethis::use_data_raw(rda.name)
+  cat("\n", crayon::blue("Exporting"), crayon::red(rda.name), crayon::blue("is done!"),"\n")
 }
