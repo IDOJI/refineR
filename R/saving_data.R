@@ -2,7 +2,6 @@ saving_data = function(rda.name, rda, path){
   path = path %>% path_tail_slash
   file = paste0(path, rda.name)
   assign(rda.name, rda)
-
   require(usethis)
   do.call("use_data", list(as.name(rda.name), overwrite=TRUE))
 

@@ -1,45 +1,42 @@
-filter_by = function(x, including.words, any=F, excluding.words=NULL, which.col=NULL, ignore.case=F, as.ind=F){
+filter_by = function(x, including.words, any_including.words=T, excluding.words=NULL, any_excluding.words=T, which.col=NULL, ignore.case=F, as.ind=F){
+  ### data.frame or vector?
   if(is.null(which.col)){
     selected_col = x
   }else{
     selected_col = x[,which.col]
   }
-
-
-
-  ### selecting including words =============================================================
   selected_x = selected_col
-  if(any){
-    ind_including = lapply(including.words, FUN=function(ith_including, ...){
-      ind = which(including.words == ith_including)
-      grep(ith_including, selected_x, ignore.case) %>% return
-    }) %>% unlist %>% unique
-    selected_x  = selected_x[ind_including]
-  }else{
-    including_list = lapply(including.words, FUN=function(ith_including, ...){
-      selected_x <<- selected_x[grep(ith_including, selected_x, ignore.case = ignore.case)]
+  ##############################################################################
+  filter_by_extract.index = function(x, words, any, ignore.case){
+    ind = lapply(words, FUN=function(ith_word){
+      grep(pattern = ith_word, x, ignore.case)
     })
+    if(any){
+      ind_intersect = ind %>% unlist %>% unique
+    }else{
+      for(k in 1:length(ind)){
+        if(k==1){
+          ind_intersect = ind[[k]]
+        }else{
+          ind_intersect = intersect(ind_intersect, ind[[k]])
+        }
+      }
+    }
+    return(ind_intersect)
   }
-
-
-
-  ### selecting excluding words ===============================================================
-  excluding_list = lapply(excluding.words, FUN=function(jth_excluding, ...){
-    selected_x <<- selected_x[-grep(jth_excluding, selected_x, ignore.case = ignore.case)]
-  })
-
-
-  ### index ===================================================================================
-  ind = which(x %in% selected_x)
+  ### selecting including words =============================================================
+  # including.words 중에 하나라도 포함하는 원소를 추출
+  ind_including = filter_by_extract.index(x = selected_x, words = including.words, any = any_including.words, ignore.case)
+  if(!is.null(excluding.words)){
+    ind_excluding = filter_by_extract.index(x = selected_x, words = excluding.words, any = any_excluding.words, ignore.case)
+    ind = ind_including[!ind_including %in% ind_excluding]
+  }else{
+    ind = ind_including
+  }
 
   if(as.ind){
     return(ind)
   }else{
-    if(is.null(which.col)){
-      return(selected_x)
-    }else{
-      return(x[ind,])
-    }
+    return(selected_x[ind])
   }
-
 }
