@@ -1,7 +1,10 @@
-as_list_by = function(df, by){
+as_list_by = function(df, by, show.progress=F){
   groups = df[,by] %>% unlist %>% unique
   data.list = lapply(groups, FUN=function(ith_group,...){
     # ith_group = groups[1]
+    if(show.progress){
+      cat("\n", crayon::yellow(paste0("As listing by "), by), crayon::bgMagenta(paste0(round(which(groups %in% ith_group)/length(groups) * 100, 4), "%")), crayon::yellow("is done."), "\n")
+    }
     df %>% dplyr::filter(df[,by] %>% unlist == ith_group) %>% as_tibble %>% return
   })
   names(data.list) = groups
