@@ -1,5 +1,4 @@
 rm_same_col = function(data.df, col1, col2, col.name=NULL, messaging=F){
-
   # col1과 col2의 원소가 동일하면 하나의 열을 없앰
   n_row = nrow(data.df)
   col_1 = data.df[,col1] %>% unlist

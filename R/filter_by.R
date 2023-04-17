@@ -1,5 +1,5 @@
 filter_by = function(x, including.words, any_including.words=T, excluding.words=NULL, any_excluding.words=T, which.col=NULL, ignore.case=F, as.ind=F){
-  ### data.frame or vector?
+   ## data.frame or vector?
   if(is.null(which.col)){
     selected_col = x
   }else{
@@ -11,6 +11,8 @@ filter_by = function(x, including.words, any_including.words=T, excluding.words=
     ind = lapply(words, FUN=function(ith_word){
       grep(pattern = ith_word, x, ignore.case)
     })
+
+
     if(any){
       ind_intersect = ind %>% unlist %>% unique
     }else{
