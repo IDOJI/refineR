@@ -1,23 +1,40 @@
-list_files_and_folders_path = function(path, recursive = T, pattern_exclude = "\\.dcm$", only_folders = F){
-  # Define the directory path
-  dir_path = path
-
-  # List the files and folders within the specified directory
-  files_and_folders = fs::dir_ls(dir_path, recurse = recursive)
-
-
-  # Filtering by pattern_exclude
-  if(!is.null(pattern_exclude)){
-    filtered_files_and_folders = files_and_folders[grep(pattern_exclude, files_and_folders, invert = TRUE)]
-  }else{
-    filtered_files_and_folders = files_and_folders
-  }
-
-
-
-  # Filter the list to keep only folders
+list_files_and_folders_path = function(path, recursive = T, pattern_exclude = NULL, only_folders = F, full.path=F){
+  # pattern_exclude =  "\\.dcm$"
+  #=============================================================================
+  # path List the files and folders within the specified directory
+  #=============================================================================
   if(only_folders){
-    filtered_files_and_folders = filtered_files_and_folders[dir_info(files_and_folders)$is_dir]
+    selected_path = fs::dir_ls(path, recurse = recursive, type = "directory")
+  }else{
+    selected_path = fs::dir_ls(path, recurse = recursive)
   }
-  return(filtered_files_and_folders)
+
+
+
+
+  #=============================================================================
+  # only files or folders names?
+  #=============================================================================
+  if(!full.path){
+    selected = fs::path_file(selected_path)
+  }else{
+    selected = selected_path
+  }
+
+
+
+
+  #=============================================================================
+  # Filtering by pattern_exclude
+  #=============================================================================
+  if(!is.null(pattern_exclude)){
+    filtered_selected = selected[grep(pattern_exclude, selected, invert = TRUE)]
+  }else{
+    filtered_selected = selected
+  }
+
+
+
+  return(filtered_selected)
 }
+
