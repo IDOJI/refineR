@@ -1,4 +1,4 @@
-filter_by = function(x, include=NULL, any_include=T, exact_include=T, exclude=NULL, any_exclude=T, exact_exclude = F, which.col=NULL, ignore.case=F, as.ind=F){
+filter_by = function(x, include=NULL, any_include=T, exact_include=F, exclude=NULL, any_exclude=T, exact_exclude = F, which.col=NULL, ignore.case=F, as.ind=F){
   # any_incldue = T : include 벡터에 있는 문자열을 하나라도 포함하는 경우의 인덱스
   # any_incldue = F : include 벡터에 있는 문자열을 모두 포함하는 경우의 인덱스
   #=============================================================================
@@ -51,6 +51,7 @@ filter_by = function(x, include=NULL, any_include=T, exact_include=T, exclude=NU
   #=============================================================================
   # Include
   #=============================================================================
+
   if(!is.null(include)){
     index_include = extract_index(x = selected_x, words = include, any_words = any_include, exact = exact_include, ignore.case = ignore.case)
   }else{
