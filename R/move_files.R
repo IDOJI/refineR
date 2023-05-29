@@ -1,16 +1,10 @@
 move_files = function(path,
-                      recursive_folder = NULL,
-                      destination){
+                      destination,
+                      files=NULL,
+                      no.move.if.already.exist=F){
   # path 폴더 안에 있는 파일들을 destination 폴더 안으로 옮김
-
-  # recursive_folder : path내의 폴더 가운데 recursive_folder의 안에 있는 파일을 지정하고 싶을 때
-  # 즉, path = paste00(path, "/", recursive_folder)로 path가 새롭게 지정됨
-  # files_list : NULL이면 모든 파일들 옮김
-  # path, destination의 길이가 동일한 벡터의 경우 여러 폴더에 대해 파일 옮김이 적용됨
-  #
-  # path = list.files(path_Preprocessing.Completed, full.names=T)
-  # destination = Clipboard_to_path()
-  # recursive_folder = "@Original_EPI"
+  # files = NULL : path 안의 모든 파일을 옮김
+  # files = c("파일명") : 특정 파일명의 파일만 옮김
   #=============================================================================
   # Fit vector length
   #=============================================================================
@@ -20,22 +14,7 @@ move_files = function(path,
 
 
 
-  #=============================================================================
-  # Add recursive_folder name
-  #=============================================================================
-  if(!is.null(recursive_folder)){
-    if(length(recursive_folder)==1){
-      path = paste0(path %>% path_tail_slash(), recursive_folder)
-    }else if(length(path)!= length(recursive_folder)){
-      stop("The length of 'path' and 'recursive' is different!")
-    }else{
-      path = paste0(path, "/", recursive_folder)
-    }
-  }
-
-
-
-
+files = c("FunImgAR", "T1ImgCoreg")
 
 
   #=============================================================================
@@ -43,22 +22,53 @@ move_files = function(path,
   #=============================================================================
   Results = lapply(seq_along(path), function(i, ...){
     ith_path = path[i]
+    ith_destination = destination[i]
     # check whether destination exists
-    dir.create(destination[i], showWarnings = F)
+
 
     tictoc::tic()
-
-    ith_files = fs::dir_ls(ith_path)
-    # moving
-    for(file in ith_files) {
-      fs::file_move(file, destination[i]) %>% invisible()
+    # If specific files are not provided, select all files in the source directory
+    if(is.null(files)){
+      path_files = fs::dir_ls(ith_path)
+    }else{
+      path_files = file.path(ith_path, files)
+      # Exclude files that do not exist in the source directory
+      path_files = path_files[fs::file_exists(path_files)]
     }
-    # Remove the '@Original_EPI' directory
-    fs::dir_delete(ith_path) %>% invisible()
+
+
+    # Make sure destination directory exists
+    if(!fs::dir_exists(ith_destination)){
+      fs::dir_create(ith_destination)
+    }
+
+
+
+    # Move files to destination directory
+    if(no.move.if.already.exist){
+      fs::file_move(path_files, ith_destination)
+    }else{
+      for(ith_path_files in path_files){
+        file.rename(from=ith_path_files, file.path(ith_destination, basename(ith_path_files)))
+      }
+    }
+
+
 
     tictoc::toc()
 
     cat("\n", crayon::green("Moving files is done! :"), crayon::red(paste0(i,"th folder")),"\n")
 
+
   })
 }
+
+
+
+# ith_files = fs::dir_ls(ith_path)
+# # moving
+# for(file in ith_files) {
+#   fs::file_move(file, destination[i]) %>% invisible()
+# }
+# # Remove the '@Original_EPI' directory
+# fs::dir_delete(ith_path) %>% invisible()

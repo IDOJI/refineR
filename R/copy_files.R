@@ -1,4 +1,4 @@
-copy_files = function(path, recursive_folder = NULL, copy.dir = F, destination, overwrite=T){
+copy_files = function(path, is.path.dir=F, recursive_folder = NULL, destination, overwrite=T, message = T){
   # recursive_folder : path내의 폴더 가운데 recursive_folder의 안에 있는 파일을 지정하고 싶을 때
   # 즉, path = paste00(path, "/", recursive_folder)로 path가 새롭게 지정됨
   # files_list : NULL이면 모든 파일들 옮김
@@ -7,7 +7,7 @@ copy_files = function(path, recursive_folder = NULL, copy.dir = F, destination, 
   # path = list.files(path_Preprocessing.Completed, full.names=T)
   # destination = Clipboard_to_path()
   # recursive_folder = "@Original_EPI"
-  # copy.dir = T : path 경로에 해당하는 폴더를 카피
+  # is.path.dir : T이면 path에 해당하는 파일을 복사(폴더는 불가), F이면 path에 안에 있는 폴더/파일을 카피
   #=============================================================================
   # Fit vector length
   #=============================================================================
@@ -51,7 +51,7 @@ copy_files = function(path, recursive_folder = NULL, copy.dir = F, destination, 
     #===========================================================================
     # Copy dir
     #===========================================================================
-    if(copy.dir){
+    if(is.path.dir){
       fs::dir_copy(path = ith_path, new_path = ith_destination, overwrite = overwrite)
     }else{
       #===========================================================================
@@ -59,11 +59,14 @@ copy_files = function(path, recursive_folder = NULL, copy.dir = F, destination, 
       #===========================================================================
       ith_files = fs::dir_ls(ith_path)
       for(file in ith_files){
-        fs::file_copy(from = file, to = ith_destination) %>% invisible()
+        fs::file_copy(path = file, new_path = ith_destination) %>% invisible()
       }
     }
     tictoc::toc()
 
-    cat("\n", crayon::green("Copying files is done! :"), crayon::red(paste0(i,"th folder")),"\n")
+
+    if(message){
+      cat("\n", crayon::green("Copying files is done! :"), crayon::red(paste0(i,"th folder")),"\n")
+    }
   })
 }
