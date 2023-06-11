@@ -3,12 +3,18 @@ fit_length = function(x.vec, fit.num){
     x.vec = as.character(x.vec)
   }
 
-  for(j in 1:length(x.vec)){
-    while(nchar(x.vec[j]) != fit.num){
-      x.vec[j] = paste("0", x.vec[j], collapse = "", sep = "")
+  New_x.vec = sapply(x.vec, function(y){
+    if(nchar(y)>fit.num){
+      stop("fit.num should larger!")
+    }else{
+      while(nchar(y) != fit.num){
+        y = paste("0", y, collapse = "", sep = "")
+      }
+      return(y)
     }
-  }
-  return(x.vec)
+  })
+
+  return(New_x.vec)
 }
 
 
