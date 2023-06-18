@@ -1,4 +1,4 @@
-change_colnames = function(data.df, from, to, exact.from=F, ignore.case.from=T){
+change_colnames = function(data.df, from, to, exact.from=T, ignore.case.from=T){
   ### 열 이름 바꾸기
   # from은 단편적으로 설정해도 됨.
   colnames = names(data.df)
