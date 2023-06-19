@@ -1,10 +1,3 @@
-source_dir = Clipboard_to_path()
-destination  = Clipboard_to_path()
-files = list.files("C:/Users/lleii/Dropbox/패밀리룸/Data/Shared/Data_Excluded")
-RID = stringr::str_extract(files, pattern = "RID_\\d+")
-
-
-move_files(source_dir = source_dir, destination_dir = destination, keywords_for_each_file = RID)
 move_files = function(source_dir, destination_dir, keywords_for_each_file){
 
 
