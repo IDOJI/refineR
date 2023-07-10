@@ -1,4 +1,4 @@
-copy_files = function(path, is.path.dir=F, recursive_folder = NULL, destination, overwrite=T, message = T){
+copy_files = function(path, recursive_folder = NULL, destination, rename_to=NULL, overwrite=T, message = T){
   # recursive_folder : path내의 폴더 가운데 recursive_folder의 안에 있는 파일을 지정하고 싶을 때
   # 즉, path = paste00(path, "/", recursive_folder)로 path가 새롭게 지정됨
   # files_list : NULL이면 모든 파일들 옮김
@@ -7,13 +7,30 @@ copy_files = function(path, is.path.dir=F, recursive_folder = NULL, destination,
   # path = list.files(path_Preprocessing.Completed, full.names=T)
   # destination = Clipboard_to_path()
   # recursive_folder = "@Original_EPI"
-  # is.path.dir : T이면 path에 해당하는 파일을 복사(폴더는 불가), F이면 path에 안에 있는 폴더/파일을 카피
+  # path가 dir이면 해당 폴더를 복사
+  # path가 file이면 해당 파일을 복사
+  # rename : path 형태가 아니라 파일 이름 형태로 input
   #=============================================================================
-  # Fit vector length
+  # rep destination
   #=============================================================================
-  if(length(path) != length(destination)){
-    stop("The length of 'path' and 'destionation' is different!")
+  if(length(destination)==1){
+    destination = rep(destination, times = length(path))
+  }else if(length(path) != length(destination)){
+    stop("The length of path and destination is different!")
   }
+
+
+
+
+
+
+  #=============================================================================
+  # Check the existence of destination folders
+  #=============================================================================
+  Results = sapply(destination, function(ith_destination){
+    dir.create(ith_destination, showWarnings = F)
+  })
+
 
 
 
@@ -35,38 +52,86 @@ copy_files = function(path, is.path.dir=F, recursive_folder = NULL, destination,
 
 
 
+
   #=============================================================================
-  # files list for each folder  & moving files
+  # Rename?
+  #=============================================================================
+  if(!is.null(rename_to)){
+    if(length(path)!=length(rename_to)){
+      stop("The length of path and rename is different!")
+    }
+  }
+
+
+
+
+  #=============================================================================
+  # Copying
   #=============================================================================
   Return = lapply(seq_along(path), FUN=function(i, ...){
     ith_path = path[i]
     ith_destination = destination[i]
 
-    # check whether destination exists
-    dir.create(ith_destination, showWarnings = F)
 
 
 
+    #===========================================================================
+    # Copying
+    #===========================================================================
     tictoc::tic()
-    #===========================================================================
-    # Copy dir
-    #===========================================================================
-    if(is.path.dir){
+    # is directory?
+    if(fs::is_dir(ith_path)){
       fs::dir_copy(path = ith_path, new_path = ith_destination, overwrite = overwrite)
-    }else{
-      #===========================================================================
-      # Copy files
-      #===========================================================================
-      ith_files = fs::dir_ls(ith_path)
-      for(file in ith_files){
-        fs::file_copy(path = file, new_path = ith_destination) %>% invisible()
+
+    # is file?
+    }else if(fs::is_file(ith_path)){
+      # copying
+      fs::file_copy(path = ith_path, new_path = ith_destination, overwrite)
+      cat("\n", crayon::yellow("Copying a file is done! :"), crayon::red(basename(ith_path)),"\n")
+
+
+      # rename
+      if(!is.null(rename_to)){
+        # ith_extension = basename(ith_path) %>% fs::path_ext()
+        ith_rename_to = rename_to[i]
+        fs::file_move(path = paste(ith_destination, basename(ith_path), sep="/"), new_path = paste(ith_destination, ith_rename_to, sep="/"))
+        cat("\n", crayon::yellow("Renaming a file is done! :"), crayon::red(basename(ith_path)),"\n")
       }
+
     }
     tictoc::toc()
+
+
+
+
+
 
 
     if(message){
       cat("\n", crayon::green("Copying files is done! :"), crayon::red(paste0(i,"th folder")),"\n")
     }
+
   })
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
