@@ -2,7 +2,9 @@ Clipboard_to_path = function() {
   OS = Sys.info()["sysname"]
 
   if (OS == "Windows") {
-    gsub("\\\\", "/", system('powershell -command "Get-Clipboard"', intern = TRUE))
+    path <- system('powershell -command "Get-Clipboard"', intern = TRUE)
+    # path <- iconv(path, from = "UTF-16LE", to = "UTF-8")
+    gsub("\\\\", "/", path)
   } else if (OS == "Darwin") { # MacOS is referred to as "Darwin" in this context
     system("pbpaste", intern = TRUE)
   } else if (OS == "Linux") {
