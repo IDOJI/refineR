@@ -1,10 +1,10 @@
 # symmetric 행렬을 만드는 함수
-make_sym = function(X, upper=T){
-  lower.tri(X)
+
+make_sym = function(mat, upper=T){
   if(upper){
-    X[lower.tri(X)] = t(X)[lower.tri(X)]
+    mat[lower.tri(mat)] <- t(mat)[lower.tri(mat)]
   }else{
-    X[lower.tri(X)] = t(X)[lower.tri(X)]
+    mat[upper.tri(mat)] <- t(mat)[upper.tri(mat)]
   }
-  return(X)
+  return(mat)
 }
