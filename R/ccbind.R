@@ -20,6 +20,11 @@
 #   }
 # }
 ccbind <- function(X, Y) {
+  if(is.vector(Y) | is.vector(X)){
+    stop("the input should be data.frame")
+  }
+  
+  
   # Calculate the row difference
   nx <- nrow(X)
   ny <- nrow(Y)
